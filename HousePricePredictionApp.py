@@ -2,7 +2,7 @@
 """
 Created on Sat May 15 10:59:54 2021
 
-@author: Nimish
+@author: simran
 """
 
 import streamlit as st
@@ -24,8 +24,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 # %matplotlib inline
-import seaborn as sns
-import plotly.express as px
+import seaborn as sns 
 from num2words import num2words
 import altair as alt
 sns.set(color_codes=True)
@@ -40,6 +39,26 @@ def display_original_dataset():
     st.write('The dataset contains ',og_dataset.shape[1],' columns and ',og_dataset.shape[0],' rows')
     
 dataset=og_dataset.rename({'What is your age?':'Age',
+          'What is your gender?':'Gender', 
+          'In which area do you stay in western line in Mumbai?':'Location',
+        'Your yearly income in INR':'Income',
+           'Do you own a house?': 'Own_House',
+           'Where is your house located?':'House_Located',   
+          'What is the carpet area of your current house in square feet?':'Carpet_Area',
+          'What is the current price of your house in INR?':'Price',
+          'How many rooms do you have?':'No of Bedrooms',
+          'Are you planning to buy a new house in Mumbai(Western Line)?':'New_House',
+          'Would you take a housing loan if you had to buy a house?':'House_Loan',
+        'In which area you would like to buy a new house in Mumbai(Western Line) if you had to?':'n_Location',
+        'What type of house you would look for if you had to buy a house?':'n_House_Type',  
+        'What would be your budget if you had to buy a house?':'Budget',
+        'How much carpet area would you want(square feet) if you had to buy a house?':'n_Carpet_Area',
+        'How many rooms do you want if you had to buy a house?':'n_Bedrooms',
+        'If you had to buy a house what would you buy?':'New/Resale'},axis=1)
+
+dataset.head()
+
+dataset2=og_dataset.rename({'What is your age?':'Age',
           'What is your gender?':'Gender', 
           'In which area do you stay in western line in Mumbai?':'Location',
         'Your yearly income in INR':'Income',
@@ -245,6 +264,7 @@ feature = ['Age', 'Gender', 'Location', 'Income','House_Located', 'No of Bedroom
 
 list(enumerate(feature))
 # data1 = data.copy()
+
 def totalCount():
     plt.figure(figsize = (15, 100))
     for i in enumerate(feature):
@@ -406,7 +426,7 @@ def OldFeatureNewFeature(compare_features):
     for i in enumerate(compare_features):
         data1 = data.copy()
         plt.subplot(15, 2,i[0]+1)
-        sns.countplot(i[1], data = data1).set_title("Comaprision Between Current Features and New Features",fontsize=18)
+        sns.countplot(i[1], data = data1)
         plt.xticks(rotation = 50)
         plt.tight_layout()
     st.pyplot(fig)
@@ -643,7 +663,7 @@ if(option == "Data Cleaning"):
     display_original_dataset()
     
     st.write("## Changing dataset columns")
-    st.write(dataset)
+    st.write(dataset2)
     
     col1, col2 = st.beta_columns(2)
         
@@ -982,6 +1002,7 @@ elif(option == "Feature Selection"):
     st.write(data.head())
     
 elif(option == "Data Transformation"):
+    st.title("Data Transformation for prediction model")
     st.write(" Dependent Variable (House Price)")
     st.write(dependent_var)
     st.write(" Scaling the Dependent Variable")
@@ -993,11 +1014,49 @@ elif(option == "Data Transformation"):
     st.write("## Splitting Data into Test and Trainning Set")
     X_train.shape , X_test.shape
     
+    st.title("Data Transformation for classification model")
+    st.write("## Dataset")
+    st.write(dataset1.head(3))
+    
+    st.write("## Target Variable")    
+    st.write(target_var.head())
+    
+    st.write("## Performaing one hot encodimg on age column")   
+    st.write(dummies_age.head())
+    
+    st.write("## Performing one hot encoding on income column")    
+    st.write(dummies_income.head())
+    
+    
+    st.write("## Concatenationg the columns")
+    st.write(target_dummies)
+    
+    
+    st.write("## Label Encoding on Gender Column") 
+    st.write(target_var)
+    
+    
+    st.write("## Displaying the final Dataset")
+    target_var
+    
+    
+    st.write("## Label Encoding on House Loan Column")     
+    st.write(y_c)
+    
+    y = dataset1.iloc[:,24].values
+    
+    st.write("## Splitting dataset into Test and Train Data")
+    st.write(X_train_c.shape, X_test_c.shape)
+        
+    
     
 elif(option == "Regression Model"):
+    st.sidebar.title("Regression Models")
     selectbox = st.sidebar.radio(label="", options=["Multiple Linear Regression","Support Vector Regression",
-                "Decision Tree Regressor","Random Forest Regressor"])
+                "Decision Tree Regression","Random Forest Regression"])
+    
     if(selectbox == "Multiple Linear Regression"):
+        st.title("Multiple Linear Regression")
                
         st.write("Multiple regression is an extension of simple linear regression. It is used when we want to predict the value of a variable based on the value of two or more other variables. The variable we want to predict is called the dependent variable (or sometimes, the outcome, target or criterion variable)")
         linear_y_pred = linear_regressor.predict(X_test)
@@ -1011,7 +1070,7 @@ elif(option == "Regression Model"):
         st.write("The model score is 60% that means 60% of the data fit the regression model,since the r-squared score is not close to 1, so the model does not fit best")
             
     elif(selectbox == "Support Vector Regression"):
-        #st.write("")
+        st.title("Support Vector Regression")
         st.write("Supervised Machine Learning Models with associated learning algorithms that analyze data for classification and regression analysis are known as Support Vector Regression. SVR is built based on the concept of Support Vector Machine or SVM.")
                 
         np.set_printoptions(precision=2)
@@ -1022,8 +1081,9 @@ elif(option == "Regression Model"):
         st.write('R^2 Score:', metrics.r2_score(y_test,y_pred_svr))
         st.write("The model score is 50% that means only 50% of the data fit the regression mode, since the r-squared score is not close to 1, so the model does not fit best")       
     
-    elif(selectbox == "Decision Tree Regressor"):
-       
+    elif(selectbox == "Decision Tree Regression"):
+        st.title("Decision Tree Regression")
+        st.write("Decision tree builds regression or classification models in the form of a tree structure. It breaks down a dataset into smaller and smaller subsets while at the same time an associated decision tree is incrementally developed. Decision trees can handle both categorical and numerical data.")
         tree_regressor = DecisionTreeRegressor(random_state = 1)
         tree_regressor.fit(X_train, y_train1)
         y_pred_tree = tree_regressor.predict(X_test)
@@ -1038,8 +1098,8 @@ elif(option == "Regression Model"):
         st.write('R^2 Score:', metrics.r2_score(y_test,y_pred_tree))
         st.write("The model score is 40% that means only 40% of the data fit the regression model, the model score is less than 50%,since the r-squared score is not close to 1, so the model does not fit best ")      
     
-    elif(selectbox == "Random Forest Regressor"):
-        
+    elif(selectbox == "Random Forest Regression"):
+        st.title("Random Forest Regression")
         st.write("Random Forest Regression is a supervised learning algorithm that uses ensemble learning method for regression. A Random Forest operates by constructing several decision trees during training time and outputting the mean of the classes as the prediction of all the trees.")        
         np.set_printoptions(precision=2)
         st.write("## Actual Vs Predicted Value")
@@ -1051,39 +1111,10 @@ elif(option == "Regression Model"):
         st.write("The model score is 75% that means 75% of the data fit the regression model, since the r-squared score is close to 1 the model fits best")
         
 elif(option == "Classification Model"):
+    st.sidebar.title("Classification Models")
    
-    radio = st.sidebar.radio(label = "", options = ["Data Transformation","Random Forest Classifier","K Nearest Neighbors Classifier"])
-    
-    if(radio == "Data Transformation"):     
-        st.write("## Dataset")
-        st.write(dataset1.head(3))
-        
-        st.write("## Target Variable")    
-        st.write(target_var.head())
-        
-        st.write("## Performaing one hot encodimg on age column")   
-        st.write(dummies_age.head())
-        
-        st.write("## Performing one hot encoding on income column")    
-        st.write(dummies_income.head())
-        
-        
-        st.write("## Concatenationg the columns")
-        st.write(target_dummies)
-        
-        
-        st.write("## Label Encoding on Gender Column") 
-        st.write(target_var)
-        
-        
-        st.write("## Displaying the final Dataset")
-        target_var
-        
-        
-        st.write("## Label Encoding on House Loan Column")     
-        st.write(y_c)
-    
-    y = dataset1.iloc[:,24].values
+    radio = st.sidebar.radio(label = "", options = ["Random Forest Classifier","K Nearest Neighbors Classifier"])
+     
     if(radio == "Random Forest Classifier"):        
                 
         st.write("# Random Forest Classifier")
@@ -1101,11 +1132,10 @@ elif(option == "Classification Model"):
         st.write("## Heat Map to show Confusion Matirx")
         fig = plt.figure(figsize=(8,5))
         sns.heatmap(cm, annot=True)
-        plt.xlabel('Predicted')
-        plt.ylabel('Truth')
+    
         st.pyplot(fig)
         
-    if(radio == "K Nearest Neighbors Classifier"):
+    elif(radio == "K Nearest Neighbors Classifier"):
         
         # st.write("## Splitting dataset into Test and Train Data")
         # st.write(X_train_c.shape, X_test_c.shape)
@@ -1127,8 +1157,7 @@ elif(option == "Classification Model"):
         st.write("## Heat Map to show Confusion Matirx")
         fig = plt.figure(figsize=(8,4))
         sns.heatmap(confusion_matrix(y_test_c,knn_pred), annot=True)
-        plt.xlabel('Predicted')
-        plt.ylabel('Truth')
+        
         st.pyplot(fig)
     
         st.write("## Choosing the K value")
@@ -1174,9 +1203,8 @@ elif(option == "Classification Model"):
 elif (option == "Prediction Model"):
     st.write("## Location in Mumbai Western Line")
     with st.form(key='prediction_form'):
-        locations = ["Marine Lines","Churchgate","Charni Road","Grant Road","Mumbai Central","Mahalaxmi","Lower Parel",
-                                                     "Prabhadevi","Dadar","Matunga Road","Mahim Junction","Bandra","Khar Road","Santacruz","Vile Parle","Andheri","Jogeshwari","Ram Mandir",
-                                                     "Goregaon","Malad","Borivali","Dahisar","Mira Road","Bhayandar","Naigaon","Vasai Road","Nallasopara","Virar"]
+        locations = ["Andheri","Bandra","Bhayandar","Borivali","Churchgate","Dadar","Dahisar","Goregaon","Grant Road","Jogeshwari","Kandivali",	
+        "Khar","Lower Parel","Mahalaxmi","Mahim","Malad","Marine Lines","Matunga Road","Mira Road","Mumbai Central","Nallasopara", "Prabhadevi","Santacruz","Vile Parle"]
         locations.sort()
         location = st.selectbox(label="", options=locations)
      
